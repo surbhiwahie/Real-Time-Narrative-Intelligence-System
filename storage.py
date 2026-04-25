@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS signals (
 
 conn.commit()
 
-
+# this function can be called by the processor to save computed signals into the database
 def save_signals(results):
     timestamp = datetime.now().isoformat()
 
@@ -25,3 +25,13 @@ def save_signals(results):
         """, (timestamp, topic, count))
 
     conn.commit()
+
+# this function can be used to retrieve previous signals for comparison or trend analysis
+def get_previous_signals():
+    cursor.execute("""
+    SELECT topic, SUM(count)
+    FROM signals
+    GROUP BY topic
+    """)
+    
+    return dict(cursor.fetchall())
