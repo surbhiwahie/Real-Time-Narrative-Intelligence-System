@@ -1,10 +1,9 @@
 import sqlite3
 from datetime import datetime
 
-conn = sqlite3.connect("narrative.db")
+conn = sqlite3.connect("narrative.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# Create a table to store narrative signals if it doesn't exist
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS signals (
     timestamp TEXT,
@@ -15,7 +14,7 @@ CREATE TABLE IF NOT EXISTS signals (
 
 conn.commit()
 
-# this function can be called by the processor to save computed signals into the database
+
 def save_signals(results):
     timestamp = datetime.now().isoformat()
 
@@ -27,12 +26,34 @@ def save_signals(results):
 
     conn.commit()
 
-# this function can be used to retrieve previous signals for comparison or trend analysis
-def get_previous_signals():
+
+def get_recent_signals(limit_runs=5):
+    """
+    Returns last N runs aggregated per topic
+    """
+
     cursor.execute("""
-    SELECT topic, SUM(count)
+    SELECT topic, count, timestamp
     FROM signals
-    GROUP BY topic
+    ORDER BY timestamp DESC
     """)
-    
-    return dict(cursor.fetchall())
+
+    rows = cursor.fetchall()
+
+    data = {}
+
+    run_counter = {}
+
+    for topic, count, ts in rows:
+        if topic not in data:
+            data[topic] = []
+
+        if len(data[topic]) < limit_runs:
+            data[topic].append(count)
+
+    # convert to averages
+    averages = {}
+    for topic, values in data.items():
+        averages[topic] = sum(values) / len(values)
+
+    return averages

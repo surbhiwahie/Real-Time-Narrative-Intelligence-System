@@ -11,7 +11,7 @@ if not API_KEY:
     raise ValueError("YOUTUBE_API_KEY not found in .env")
 
 # This function fetches recent YouTube video titles based on a "search query"
-def fetch_youtube(query="AI news"):       # this is the search query for YouTube videos, can be modified to fetch different topics
+def fetch_youtube(query="OpenAI"):       # this is the search query for YouTube videos, can be modified to fetch different topics
     youtube = build("youtube", "v3", developerKey=API_KEY)
 
     request = youtube.search().list(
