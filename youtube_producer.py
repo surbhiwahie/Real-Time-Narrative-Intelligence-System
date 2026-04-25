@@ -1,9 +1,8 @@
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 import os
-
-from processor import compute_narratives, generate_insights
-from storage import save_signals
+from storage import save_signals, get_previous_signals
+from processor import compute_narratives, generate_insights, compute_trends
 
 load_dotenv()
 API_KEY = os.getenv("YOUTUBE_API_KEY")
@@ -37,8 +36,9 @@ if __name__ == "__main__":
     results = compute_narratives([v.lower() for v in videos])
 
     save_signals(results)
-
+    previous = get_previous_signals()
     insights = generate_insights(results)
+    trends = compute_trends(insights, previous)
 
     print("\nAI-STYLE INSIGHTS (YouTube):\n")
 
@@ -47,4 +47,11 @@ if __name__ == "__main__":
         print("count:", v["count"])
         print("signal:", v["signal"])
         print("meaning:", v["meaning"])
+
+        # 🔥 NEW: trend layer
+        trend = trends.get(k, {})
+
+        print("previous:", trend.get("previous", 0))
+        print("change:", trend.get("change", 0))
+        print("direction:", trend.get("direction", "NEW"))
         print("-" * 40)
