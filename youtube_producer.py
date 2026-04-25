@@ -2,6 +2,9 @@ from googleapiclient.discovery import build
 from dotenv import load_dotenv
 import os
 
+from processor import compute_narratives, generate_insights
+from storage import save_signals
+
 load_dotenv()
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 
@@ -21,13 +24,7 @@ def fetch_youtube(query="AI news"):
 
     response = request.execute()
 
-    results = []
-
-    for item in response["items"]:
-        title = item["snippet"]["title"]
-        results.append(title)
-
-    return results
+    return [item["snippet"]["title"] for item in response["items"]]
 
 
 if __name__ == "__main__":
@@ -37,12 +34,17 @@ if __name__ == "__main__":
     for v in videos:
         print("-", v)
 
-    # send to processor
-    from processor import compute_narratives
-
     results = compute_narratives([v.lower() for v in videos])
 
-    print("\nNarrative Signals (YouTube):\n")
+    save_signals(results)
 
-    for k, v in results.items():
-        print(k, "->", v)
+    insights = generate_insights(results)
+
+    print("\nAI-STYLE INSIGHTS (YouTube):\n")
+
+    for k, v in insights.items():
+        print(k.upper())
+        print("count:", v["count"])
+        print("signal:", v["signal"])
+        print("meaning:", v["meaning"])
+        print("-" * 40)
