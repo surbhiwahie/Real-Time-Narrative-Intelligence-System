@@ -1,15 +1,10 @@
-import requests
-import xml.etree.ElementTree as ET
+from producer import fetch_news
+from processor import compute_narratives
 
-def fetch_news():
-    url = "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en"
-    response = requests.get(url)
-    root = ET.fromstring(response.content)
+titles = fetch_news()
+scores = compute_narratives(titles)
 
-    titles = []
+print("Narrative Signals:\n")
 
-    for item in root.findall(".//item"):
-        title = item.find("title").text.lower()
-        titles.append(title)
-
-    return titles
+for k, v in sorted(scores.items(), key=lambda x: x[1], reverse=True):
+    print(k, "->", v)
