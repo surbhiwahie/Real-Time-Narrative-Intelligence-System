@@ -10,8 +10,8 @@ API_KEY = os.getenv("YOUTUBE_API_KEY")
 if not API_KEY:
     raise ValueError("YOUTUBE_API_KEY not found in .env")
 
-
-def fetch_youtube(query="AI news"):
+# This function fetches recent YouTube video titles based on a "search query"
+def fetch_youtube(query="AI news"):       # this is the search query for YouTube videos, can be modified to fetch different topics
     youtube = build("youtube", "v3", developerKey=API_KEY)
 
     request = youtube.search().list(
@@ -25,7 +25,7 @@ def fetch_youtube(query="AI news"):
 
     return [item["snippet"]["title"] for item in response["items"]]
 
-
+# The main execution flow for the YouTube producer
 if __name__ == "__main__":
     videos = fetch_youtube()
 
@@ -33,6 +33,7 @@ if __name__ == "__main__":
     for v in videos:
         print("-", v)
 
+    # Compute narrative signals from video titles
     results = compute_narratives([v.lower() for v in videos])
 
     save_signals(results)
@@ -42,6 +43,7 @@ if __name__ == "__main__":
 
     print("\nAI-STYLE INSIGHTS (YouTube):\n")
 
+    # Display insights along with trend information
     for k, v in insights.items():
         print(k.upper())
         print("count:", v["count"])

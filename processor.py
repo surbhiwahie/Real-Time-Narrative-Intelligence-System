@@ -1,18 +1,47 @@
 # This function computes narrative signals based on keyword matching in news titles (Keyword Counting)
 def compute_narratives(titles):
     narratives = {
-        "politics": ["kushner", "trump", "election", "government", "doj"],
-        "crime": ["murder", "charges", "death", "court"],
-        "science": ["scientists", "research", "study"],
-        "tech": ["ai", "windows", "model", "google"],
-        "geopolitics": ["pakistan", "iran", "china", "israel"]
-    }
+    "politics": [
+        "trump", "biden", "election", "government", "white house",
+        "congress", "senate", "policy", "doj", "court", "minister"
+    ],
+
+    "crime": [
+        "murder", "arrest", "charges", "court", "police",
+        "investigation", "shooting", "fraud", "crime"
+    ],
+
+    "science": [
+        "scientists", "research", "study", "discovery",
+        "experiment", "physics", "biology", "paper", "nasa"
+    ],
+
+    "tech": [
+        "google", "microsoft", "apple", "amazon",
+        "software", "cloud", "model", "algorithm",
+        "chip", "nvidia", "data", "platform"
+    ],
+
+    "ai_narrative": [
+        "ai", "artificial intelligence", "openai", "chatgpt",
+        "gpt", "claude", "gemini", "llm", "agi",
+        "machine learning", "deep learning",
+        "robot", "automation", "neural", "transformer",
+        "future", "revolution", "crash", "boom", "breakthrough"
+    ],
+
+    "geopolitics": [
+        "china", "india", "russia", "usa", "america",
+        "ukraine", "nato", "israel", "iran", "pakistan",
+        "war", "conflict", "tension", "sanctions"
+    ]
+}
 
     scores = {k: 0 for k in narratives}
 
     for title in titles:
         for n, keywords in narratives.items():
-            if any(word in title for word in keywords):
+            if any(word.lower() in title.lower() for word in keywords):
                 scores[n] += 1
 
     return scores

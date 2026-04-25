@@ -1,7 +1,7 @@
-from producer import fetch_news
+from youtube_producer import fetch_youtube
 from processor import compute_narratives
 
-titles = fetch_news()
+titles = fetch_youtube()
 scores = compute_narratives(titles)
 
 print("Narrative Signals:\n")

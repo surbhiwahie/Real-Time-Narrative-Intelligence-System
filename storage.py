@@ -4,6 +4,7 @@ from datetime import datetime
 conn = sqlite3.connect("narrative.db")
 cursor = conn.cursor()
 
+# Create a table to store narrative signals if it doesn't exist
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS signals (
     timestamp TEXT,
