@@ -1,16 +1,18 @@
 from youtube_producer import fetch_youtube, fetch_multi_topic
-from processor import compute_narratives, generate_insights, compute_trends
+from processor import compute_narratives, generate_insights, compute_trends, get_top_narratives
 from storage import save_signals, get_recent_signals
 from ai_insights import explain_trends
 
-
-print("main.py started")
-
+print("\n=== REAL-TIME NARRATIVE INTELLIGENCE SYSTEM ===\n")
 def main():
     # 1. Fetch
     titles = fetch_multi_topic()
+    DEBUG = False
+    if DEBUG:
+        print("\nFETCHED TITLES:")
+        for t in titles:
+            print("-", t)
 
-    
     # 2. Process
     scores = compute_narratives([t.lower() for t in titles])
 
@@ -47,9 +49,17 @@ def main():
         print(f"trend strength: {percent_change:.2f}%")
         print("-" * 40)
 
+    top = get_top_narratives(scores, top_k=3)
+
+    print("\nTOP NARRATIVES OF THE DAY:\n")
+
+    for name, value in top:
+        print(f"{name.upper():<15} -> {value}")
+
     print("\nAI ANALYSIS:\n")
     analysis = explain_trends(trend_summary)
     print(analysis)
+    
 
 if __name__ == "__main__":
     main()

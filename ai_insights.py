@@ -16,6 +16,7 @@ Explain:
 2. Which narratives are rising or falling
 3. Why this matters
 4. A short executive summary
+5. Explain what these trends mean for media, business, or public attention.
 
 Be concise and professional.
 """

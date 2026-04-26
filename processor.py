@@ -99,3 +99,11 @@ def compute_trends(current, previous):
         }
 
     return trends
+
+# This function returns top N narratives sorted by current score
+def get_top_narratives(scores, top_k=3):
+    """
+    Returns top N narratives sorted by current score
+    """
+    sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    return sorted_items[:top_k]
