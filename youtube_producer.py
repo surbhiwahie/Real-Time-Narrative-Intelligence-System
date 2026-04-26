@@ -27,10 +27,16 @@ def fetch_youtube(query="OpenAI", max_results=5):
 
     response = request.execute()
 
-    return [
-        item["snippet"]["title"]
-        for item in response["items"]
-    ]
+    results = []
+
+    for item in response["items"]:
+        title = item["snippet"]["title"]
+        description = item["snippet"]["description"]
+
+        text = title + " " + description
+        results.append(text)
+
+    return results
 
 
 # This is Optional - for local test only
