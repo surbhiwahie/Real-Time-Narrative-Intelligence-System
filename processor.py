@@ -41,12 +41,11 @@ def compute_narratives(titles):
 
     for title in titles:
         for n, keywords in narratives.items():
-            if any(word.lower() in title.lower() for word in keywords):
+            title_lower = title.lower()
+            if any(k in title_lower for k in keywords):
                 scores[n] += 1
 
-    return {
-    "scores": scores
-}
+    return scores
 
 # This function generates insights based on the computed narrative signals → percent + signal + meaning
 def generate_insights(results):
@@ -112,8 +111,4 @@ def compute_trends(current, history):
 
 # This function returns top N narratives sorted by current score
 def get_top_narratives(scores, top_k=3):
-    """
-    Returns top N narratives sorted by current score
-    """
-    sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    return sorted_items[:top_k]
+    return sorted(scores.items(), key=lambda x: x[1], reverse=True)[:top_k]

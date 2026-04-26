@@ -1,79 +1,62 @@
 import streamlit as st
-from youtube_producer import fetch_multi_topic
-from processor import compute_narratives
-from storage import get_recent_signals, save_signals
-from ai_insights import explain_trends
 from streamlit_autorefresh import st_autorefresh
 
+from youtube_producer import fetch_multi_topic
+from processor import compute_narratives, get_top_narratives
+from storage import save_signals, get_recent_signals
+from ai_insights import explain_trends
 
-st_autorefresh(interval=60000, key="data_refresh")
-st.set_page_config(page_title="Narrative Intelligence Dashboard", layout="wide")
+st.set_page_config(page_title="Narrative Intelligence", layout="wide")
 
-st.title("📊 Real-Time Narrative Intelligence System")
+st.title(" Real-Time Narrative Intelligence System")
 
-# ---------------------------
-# 1. Fetch Data
-# ---------------------------
-st.header("1. Data Ingestion")
+st_autorefresh(interval=60000, key="refresh")
 
+# ---------------- FETCH ----------------
 titles = fetch_multi_topic()
 
-st.write(f"Total videos fetched: {len(titles)}")
+st.subheader("Fetched Data")
+st.write(len(titles), "videos analyzed")
 
-with st.expander("View raw titles"):
-    for t in titles:
-        st.write("-", t)
-
-# ---------------------------
-# 2. Processing Layer
-# ---------------------------
-st.header("2. Narrative Signals")
-
+# ---------------- PROCESS ----------------
 scores = compute_narratives([t.lower() for t in titles])
 
+st.subheader("Narrative Distribution")
 st.bar_chart(scores)
 
-# ---------------------------
-# 3. Trend Layer
-# ---------------------------
-st.header("3. Trend Analysis")
+# ---------------- HISTORY ----------------
+history = get_recent_signals(limit_runs=5)
 
-previous = get_recent_signals()
+st.subheader("Trend (vs history)")
 
-trend_data = {}
-
+trend = {}
 for k, v in scores.items():
-    prev = previous.get(k, 0)
-    change = v - prev
-    trend_data[k] = change
+    prev_vals = []
+    for run in history:
+        if isinstance(run, dict):
+            prev_vals.append(run.get(k, 0))
+        elif isinstance(run, (list, tuple)) and len(run) >= 2:
+            prev_vals.append(run[1])
+    prev_avg = sum(prev_vals) / len(prev_vals) if prev_vals else 0
+    # trend[k] = int(v) - prev_avg
+    # trend[k] = (v.get("count", v) if isinstance(v, dict) else v) - prev_avg
+    trend[k] = v - prev_avg
 
-st.bar_chart(trend_data)
+st.bar_chart(trend)
 
-# ---------------------------
-# 4. Top Narratives
-# ---------------------------
-st.header("4. Top Narratives")
+# ---------------- TOP ----------------
+st.subheader("Top Narratives")
 
-top = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]
+top = get_top_narratives(scores)
 
 for k, v in top:
-    st.metric(label=k, value=v)
+    st.metric(label=k, value=int(v))
 
-# ---------------------------
-# 5. AI Insight Layer
-# ---------------------------
-st.header("5. AI Narrative Summary")
+# ---------------- AI SUMMARY ----------------
+st.subheader("AI Analysis")
 
-trend_summary = "\n".join(
-    [f"{k}: current={v}, previous={previous.get(k,0)}, change={v - previous.get(k,0)}"
-     for k, v in scores.items()]
-)
+summary = "\n".join([f"{k}: {v}" for k, v in scores.items()])
+st.write(explain_trends(summary))
 
-analysis = explain_trends(trend_summary)
-
-st.write(analysis)
-
-# ---------------------------
-# 6. Save State
-# ---------------------------
+# ---------------- SAVE ----------------
 save_signals(scores)

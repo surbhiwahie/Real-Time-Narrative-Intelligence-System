@@ -6,7 +6,6 @@ cursor = conn.cursor()
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS signals (
-    run_id TEXT,
     timestamp TEXT,
     topic TEXT,
     count INTEGER
@@ -15,44 +14,42 @@ CREATE TABLE IF NOT EXISTS signals (
 
 conn.commit()
 
-import uuid
 
 def save_signals(results):
-    run_id = str(uuid.uuid4())
     timestamp = datetime.now().isoformat()
 
-    for topic, count in results.items():
+    for topic, value in results.items():
+
+        # # handle both int and dict safely
+        # if isinstance(value, dict):
+        #     count = value.get("count", 0)
+        # else:
+        count = value
+
         cursor.execute("""
-        INSERT INTO signals (run_id, timestamp, topic, count)
-        VALUES (?, ?, ?, ?)
-        """, (run_id, timestamp, topic, count))
+        INSERT INTO signals (timestamp, topic, count)
+        VALUES (?, ?, ?)
+        """, (timestamp, topic, count))
 
     conn.commit()
 
 
 def get_recent_signals(limit_runs=5):
     cursor.execute("""
-    SELECT run_id, timestamp, topic, count
+    SELECT timestamp, topic, count
     FROM signals
     ORDER BY timestamp DESC
     """)
 
     rows = cursor.fetchall()
 
-    runs = {}
-    ordered_runs = []
+    data = {}
 
-    for run_id, ts, topic, count in rows:
-        if run_id not in runs:
-            runs[run_id] = {
-                "timestamp": ts,
-                "data": {}
-            }
-            ordered_runs.append(run_id)
+    for ts, topic, count in rows:
+        if topic not in data:
+            data[topic] = []
 
-        runs[run_id]["data"][topic] = count
+        if len(data[topic]) < limit_runs:
+            data[topic].append((ts, count))
 
-        if len(ordered_runs) >= limit_runs:
-            break
-
-    return [runs[rid] for rid in ordered_runs]
+    return data
