@@ -1,95 +1,184 @@
-# Real-Time-Narrative-Intelligence-System
+# Real-Time Narrative Intelligence System
 
-This project is a real-time narrative intelligence pipeline that collects YouTube data, extracts thematic signals, and analyzes shifts in global discourse. It simulates a lightweight data engineering system that detects emerging narratives across topics such as AI, politics, geopolitics, science, and crime.
+A real-time data intelligence pipeline that ingests YouTube video metadata, classifies content into narrative themes, tracks temporal shifts in discourse, and generates AI-powered insights through a live dashboard.
 
-The system is designed to demonstrate:
+---
 
-a. Data ingestion from external APIs (YouTube Data API)
+# Project Overview
 
-b. Stream-style processing pipeline
+Modern media ecosystems are driven by rapidly shifting narratives — politics, AI, geopolitics, technology, and crime dominate attention in fluctuating patterns.
 
-c. Rule-based narrative classification
+This system builds an **end-to-end narrative intelligence pipeline** that:
 
-d. Temporal trend tracking
+- Collects real-time YouTube video metadata
+- Extracts narrative signals using keyword-based classification
+- Tracks how narratives evolve over time
+- Computes trend dynamics (rise, fall, stability)
+- Generates AI-based analytical summaries
+- Visualizes everything in a live Streamlit dashboard
 
-e. AI-assisted narrative summarization
+---
 
+# Problem Definition
 
-The system follows a modular data pipeline:
-YouTube API (Producer) -> Raw Video Titles -> Processor (Signal Extraction) -> Storage Layer (Stateful History) -> Trend Engine (Comparative Analysis) -> AI Insight Layer (Narrative Summary) -> Final Output Dashboard (CLI)
+We aim to answer:
 
+> “What topics are dominating attention right now, and how are they changing over time?”
 
-youtube_producer.py (data ingestion):
+This is not a static classification problem — it is a **temporal narrative tracking system**.
 
-This module is responsible for data ingestion from the YouTube Data API. It acts as the entry point of the pipeline, fetching recent video titles based on configurable search queries. The goal of this layer is to simulate real-time external data ingestion while keeping it decoupled from downstream processing logic. By isolating API interaction in this module, the system remains flexible and extensible for adding additional data sources in the future.
+---
 
-processor.py (signal extraction):
+# System Architecture
 
-The processor module transforms raw text data into structured narrative signals. It applies keyword-based classification to map video titles into predefined thematic categories such as politics, technology, science, crime, geopolitics, and AI narratives. In addition to classification, it computes signal strength and distribution, enabling the system to quantify which narratives are dominating at any given time.
-
-storage.py (state tracking):
-
-This module provides a lightweight persistence layer that stores historical narrative signals across runs. By maintaining state, it enables temporal comparisons and trend detection. Instead of treating each execution as independent, the system evolves into a stateful pipeline capable of identifying rising, falling, or stable narratives over time.
-
-main.py (trend computation):
-
-The main module orchestrates the entire pipeline by connecting all components together. It controls the execution flow from data ingestion to processing, storage, trend computation, and final output generation. This separation ensures that business logic and orchestration remain centralized, making the system easier to maintain, debug, and extend.
-
-ai_insights.py (semantic interpretation):
-
-This module introduces an AI layer that converts quantitative trend data into human-readable insights. Using a language model, it interprets changes in narrative signals and generates structured summaries, including trend explanations and executive-level observations. This bridges the gap between raw data and decision-making by transforming metrics into meaningful narratives.
-
-Features:
-
-a. Real-time YouTube data ingestion
-
-b. Multi-topic narrative detection
-
-c. Temporal trend analysis (current vs previous runs)
-
-d. AI-generated narrative summaries
-
-e. Modular pipeline design (producer → processor → storage → AI layer)
+<img width="1536" height="1024" alt="Architechture diagram - Real-Time Narrative" src="https://github.com/user-attachments/assets/84a9131b-45e6-468f-be13-907cd49507e9" />
 
 
-Setup Instructions: 
+The system is composed of 5 major layers:
 
-1. Clone repository
-   
+## 1. Data Ingestion Layer
+- File: `youtube_producer.py`
+- Fetches video titles from YouTube Data API
+- Supports caching and fallback mechanisms
+
+### Output:
+Raw video titles
+
+---
+
+## 2. Processing Layer (Narrative Engine)
+- File: `processor.py`
+- Performs keyword-based classification across categories:
+
+### Narrative Categories:
+- Politics
+- Crime
+- Science
+- Tech
+- AI Narrative
+- Geopolitics
+
+Each title is scanned and mapped to one or more categories.
+
+---
+
+## 3. Intelligence Layer (Trend Analysis)
+- Compares current signal counts with historical data stored in SQLite
+- Computes:
+  - Current count
+  - Previous average
+  - Absolute change
+  - Trend strength (%)
+
+This enables detection of:
+- Rising narratives
+- Falling narratives
+- Stable narratives
+
+---
+
+## 4. Storage Layer
+- File: `storage.py`
+- SQLite database (`narrative.db`)
+
+Stores:
+- timestamp
+- topic
+- count
+
+Purpose:
+- Enables historical comparison
+- Builds temporal memory of narrative shifts
+
+---
+
+## 5. Presentation Layer
+- File: `app.py` (Streamlit)
+
+Provides:
+- Real-time bar charts of narrative distribution
+- Trend comparison vs historical averages
+- Top narratives ranking
+- AI-generated narrative summary
+- Auto-refreshing live dashboard
+
+---
+
+# User Interface (Streamlit Dashboard)
+
+When running the system, users see:
+
+###  Narrative Distribution
+- Bar chart of topic frequencies
+
+###  Trend Analysis
+- Comparison of current vs historical averages
+
+###  Top Narratives
+- Ranked list of dominant topics
+
+###  AI Insights
+- Natural language interpretation of trends
+- Summary of rising/falling narratives
+
+---
+
+#  How the System Works (End-to-End Flow)
+YouTube API
+↓
+Video Titles
+↓
+Keyword Classifier (processor.py)
+↓
+Narrative Scores
+↓
+SQLite Storage (historical tracking)
+↓
+Trend Engine (comparison logic)
+↓
+AI Insight Generator
+↓
+Streamlit Dashboard
+
+
+---
+
+# Installation & Setup
+
+## 1. Clone repository
+```bash
+git clone <repo-url>
+cd Real-Time-Narrative-Intelligence-System
 ```
-git clone https://github.com/your-username/real-time-narrative-intelligence-system.git
-
-cd Real-Time-Narrative-Intelligence-System 
-```
-
-2. Create virtual environment
-```
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. Install dependencies
+2. Install dependencies
 ```
 pip install -r requirements.txt
 ```
 
-4. Setup environment variables: 
+3. Add environment variables
+
 Create a .env file:
 ```
-YOUTUBE_API_KEY=your_youtube_api_key
-OPENAI_API_KEY=your_openai_api_key
+YOUTUBE_API_KEY=your_api_key_here
 ```
 
-5. Run the system
+4. Run Streamlit app
 ```
-python3 main.py
+streamlit run app.py
 ```
+[Narrative Intelligence-new.pdf](https://github.com/user-attachments/files/27107475/Narrative.Intelligence-new.pdf)
 
-Output Example:
-```
-TECH -> STRONG SIGNAL
-AI_NARRATIVE -> EMERGING SIGNAL
-POLITICS -> WEAK SIGNAL
-GEOPOLITICS -> WEAK SIGNAL
-```
-Plus AI-generated narrative interpretation.
+<img width="1457" height="822" alt="image" src="https://github.com/user-attachments/assets/39bd84b5-873f-4b20-9bbd-61f20aa1a844" />
+
+<img width="1462" height="828" alt="image" src="https://github.com/user-attachments/assets/4aa004dd-8163-4d62-a380-1351da1d7650" />
+
+<img width="1447" height="820" alt="image" src="https://github.com/user-attachments/assets/a48e1ae6-bd6b-4ff0-aef7-088ecc1c3ff8" />
+
+
+
+
+
+
+
+
+
