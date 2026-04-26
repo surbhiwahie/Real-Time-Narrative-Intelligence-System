@@ -1,14 +1,14 @@
-from youtube_producer import fetch_youtube
+from youtube_producer import fetch_youtube, fetch_multi_topic
 from processor import compute_narratives, generate_insights, compute_trends
 from storage import save_signals, get_recent_signals
 from ai_insights import explain_trends
 
+
 print("main.py started")
 
 def main():
-    print(" entering main block")
     # 1. Fetch
-    titles = fetch_youtube()
+    titles = fetch_multi_topic()
 
     
     # 2. Process
