@@ -44,7 +44,9 @@ def compute_narratives(titles):
             if any(word.lower() in title.lower() for word in keywords):
                 scores[n] += 1
 
-    return scores
+    return {
+    "scores": scores
+}
 
 # This function generates insights based on the computed narrative signals → percent + signal + meaning
 def generate_insights(results):
@@ -75,26 +77,34 @@ def generate_insights(results):
     return insights
 
 # This function computes trends by comparing current signals with previous signals
-def compute_trends(current, previous):
+def compute_trends(current, history):
     trends = {}
+
+    # latest and previous runs
+    latest = history[0]["data"] if history else {}
+    prev = history[1]["data"] if len(history) > 1 else {}
 
     for topic, data in current.items():
         current_count = data["count"]
-        previous_count = previous.get(topic, 0)
+
+        previous_count = prev.get(topic, 0)
 
         change = current_count - previous_count
 
-        if change > 0:
-            direction = "RISING"
-        elif change < 0:
-            direction = "FALLING"
-        else:
-            direction = "STABLE"
+        # trend strength (avoid divide by zero)
+        trend_strength = (change / (previous_count + 1)) * 100
+
+        direction = (
+            "RISING" if change > 0 else
+            "FALLING" if change < 0 else
+            "STABLE"
+        )
 
         trends[topic] = {
             "current": current_count,
             "previous": previous_count,
             "change": change,
+            "trend_strength": round(trend_strength, 2),
             "direction": direction
         }
 
