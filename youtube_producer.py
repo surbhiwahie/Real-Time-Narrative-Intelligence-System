@@ -107,10 +107,10 @@ def fetch_multi_topic_cached():
     cached = load_cache()
 
     if cached:
-        print("\n⚡ Using cached data (avoiding API call)\n")
+        print("\n Using cached data (avoiding API call)\n")
         return cached
 
-    print("\n🌐 Fetching fresh data from API...\n")
+    print("\n Fetching fresh data from API...\n")
 
     titles = fetch_multi_topic()
 
