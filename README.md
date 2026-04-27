@@ -130,7 +130,7 @@ When running the system, users see:
 
 ## 1. Clone repository
 ```bash
-git clone <repo-url>
+git clone https://github.com/surbhiwahie/Real-Time-Narrative-Intelligence-System.git
 cd Real-Time-Narrative-Intelligence-System
 ```
 2. Install dependencies
