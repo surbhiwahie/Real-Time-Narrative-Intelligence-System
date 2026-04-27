@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 import plotly.express as px
 import pandas as pd
+import re
 
 from youtube_producer import fetch_multi_topic
 from processor import compute_narratives, get_top_narratives
@@ -16,9 +17,9 @@ st.set_page_config(
 )
 
 # ---------------- HEADER ----------------
-st.title(" Real-Time Narrative Intelligence System")
+st.title("🧠 Real-Time Narrative Intelligence System")
 st.markdown("### Detecting and analyzing evolving narratives in real time")
-st.caption(" Auto-refreshing every 60 seconds")
+st.caption("🔄 Auto-refreshing every 60 seconds")
 
 st.divider()
 
@@ -26,24 +27,23 @@ st.divider()
 st_autorefresh(interval=60000, key="refresh")
 
 # ---------------- SIDEBAR ----------------
-st.sidebar.header(" Controls")
+st.sidebar.header("⚙️ Controls")
 show_raw = st.sidebar.toggle("Show Raw Data", False)
 
 # ---------------- FETCH ----------------
-with st.spinner(" Fetching real-time data..."):
+with st.spinner("📡 Fetching real-time data..."):
     titles = fetch_multi_topic()
 
 # ---------------- PROCESS ----------------
 scores = compute_narratives([t.lower() for t in titles])
 
-# Convert to DataFrame for better charts
 df_scores = pd.DataFrame(list(scores.items()), columns=["Narrative", "Score"])
 df_scores = df_scores.sort_values(by="Score", ascending=False)
 
 # ---------------- TOP METRICS ----------------
 top = get_top_narratives(scores)
 
-st.subheader(" Top Narratives Overview")
+st.subheader("📊 Top Narratives Overview")
 
 cols = st.columns(len(top))
 
@@ -53,7 +53,7 @@ for i, (k, v) in enumerate(top):
 st.divider()
 
 # ---------------- NARRATIVE DISTRIBUTION ----------------
-st.subheader(" Narrative Distribution")
+st.subheader("📈 Narrative Distribution")
 
 fig = px.bar(
     df_scores,
@@ -103,13 +103,29 @@ fig2.update_layout(
 st.plotly_chart(fig2, use_container_width=True)
 
 # ---------------- AI INSIGHTS ----------------
-st.subheader(" AI Insights")
+st.subheader("🧠 AI Insights")
 
 summary = "\n".join([f"{k}: {v}" for k, v in scores.items()])
 
 with st.spinner("Generating AI insights..."):
     insights = explain_trends(summary)
 
+# ---------------- FORMAT FIX ----------------
+def format_insights(text):
+    # Fix missing newline after ### headings
+    text = re.sub(r"(###\s*\d+\.\s[^\n]+)", r"\1\n", text)
+
+    # Convert numbered sections into bold headers
+    text = re.sub(r"\n?(\d+\.\s[^\n]+)", r"\n<br><strong>\1</strong><br>", text)
+
+    # Replace line breaks for HTML rendering
+    text = text.replace("\n", "<br>")
+
+    return text
+
+formatted_insights = format_insights(insights)
+
+# ---------------- DISPLAY CARD ----------------
 st.markdown(
     f"""
     <div style="
@@ -119,19 +135,19 @@ st.markdown(
         border-left: 5px solid #4CAF50;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         font-size: 16px;
-        line-height: 1.6;
+        line-height: 1.7;
         color: #111;
     ">
-        <strong>🧠 AI Insight</strong><br><br>
-        {insights}
+        <strong style="font-size:18px;">🧠 AI Insight</strong><br><br>
+        {formatted_insights}
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# ---------------- RAW DATA (OPTIONAL) ----------------
+# ---------------- RAW DATA ----------------
 if show_raw:
-    st.subheader(" Raw Titles")
+    st.subheader("📰 Raw Titles")
     st.write(titles)
 
 # ---------------- SAVE ----------------
