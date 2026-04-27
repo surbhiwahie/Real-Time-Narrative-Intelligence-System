@@ -38,3 +38,6 @@ openai>=1.0.0
 
 # Utilities
 tqdm
+
+#google API
+google-api-python-client
