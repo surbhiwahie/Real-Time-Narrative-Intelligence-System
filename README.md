@@ -163,6 +163,7 @@ pip install -r requirements.txt
 Create a .env file:
 ```
 YOUTUBE_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_openai_key
 ```
 
 4. Run Streamlit app
