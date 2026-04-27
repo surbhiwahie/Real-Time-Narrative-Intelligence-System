@@ -2,6 +2,9 @@
 
 A real-time data intelligence pipeline that ingests YouTube video metadata, classifies content into narrative themes, tracks temporal shifts in discourse, and generates AI-powered insights through a live dashboard.
 
+ **Live Demo:**  
+https://realtimeelectionvotingcapstoneproject-c3jnxdumrjkwtwqiscdip9.streamlit.app/
+
 ---
 
 # Project Overview
