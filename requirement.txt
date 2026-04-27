@@ -1,20 +1,40 @@
+# UI
 streamlit
 streamlit-autorefresh
 
+# Data handling
 pandas
 numpy
 requests
 plotly
 
+# API + networking
+requests
+httpx
+beautifulsoup4
+lxml
+feedparser
+
+# Environment variables
 python-dotenv
 
-openai>=1.0.0
-
-sentence-transformers
-faiss-cpu
-
+# NLP / ML core
 nltk
 spacy
 scikit-learn
+dateparser
 
+# Embeddings / semantic intelligence
+sentence-transformers
+
+# Vector search (if used anywhere in pipeline)
+faiss-cpu
+
+# Visualization
+plotly
+
+# LLM integration (used in ai_insights.py)
+openai>=1.0.0
+
+# Utilities
 tqdm
