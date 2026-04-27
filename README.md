@@ -126,26 +126,6 @@ When running the system, users see:
 
 ---
 
-#  How the System Works (End-to-End Flow)
-YouTube API
-↓
-Video Titles
-↓
-Keyword Classifier (processor.py)
-↓
-Narrative Scores
-↓
-SQLite Storage (historical tracking)
-↓
-Trend Engine (comparison logic)
-↓
-AI Insight Generator
-↓
-Streamlit Dashboard
-
-
----
-
 # Installation & Setup
 
 ## 1. Clone repository
